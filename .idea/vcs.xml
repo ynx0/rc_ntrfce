@@ -2,7 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/imagezmq" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rc_common" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../rc_server" vcs="Git" />
   </component>
 </project>

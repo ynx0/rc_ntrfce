@@ -3,9 +3,11 @@
     <words>
       <w>brotli</w>
       <w>exitting</w>
+      <w>freqmap</w>
       <w>imagezmq</w>
       <w>mcthankies</w>
       <w>ngrok</w>
+      <w>pinmap</w>
       <w>stackoverflow</w>
     </words>
   </dictionary>

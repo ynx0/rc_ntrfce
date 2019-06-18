@@ -12,6 +12,7 @@ opencv-python = "*"
 requests = "*"
 numpy = "*"
 pillow = "*"
+procbridge = "*"
 
 [requires]
 python_version = "3.6"

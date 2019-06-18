@@ -18,6 +18,7 @@
           <option value="cv2.waitkey" />
           <option value="cv2.imshow" />
           <option value="cv2.rectangle" />
+          <option value="motor_controller.RPi" />
         </list>
       </option>
     </inspection_tool>

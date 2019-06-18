@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Commands(Enum):
+class WebCommands(Enum):
 	CTRL_FORWARD = "ctrl-forward",
 	CTRL_BACKWARD = "ctrl-backward",
 	CTRL_LEFT = "ctrl-left",

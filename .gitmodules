@@ -1,0 +1,3 @@
+[submodule "rc_common"]
+	path = rc_common
+	url = https://github.com/ynx0/rc_common

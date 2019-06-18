@@ -1,22 +1,22 @@
 import asyncio
 import base64
-import io
-import json
 import os
-from dataclasses import dataclass
 from glob import glob
-from typing import Any
+import io
 
 import cv2
 import numpy as np
 import socketio
 from PIL import Image
 from aiohttp import web
-
-# MARK - setup variables
-
+from procbridge import Client
 
 # warning, don't use ngrok because it forwards everything from localhost, essentially bypassing the whitelist
+from WebCommandNames import WebCommands
+from rc_common import netcfg
+
+# MARK - setup variables
+from rc_common.RC_Commands import Commands
 
 whitelist = ['127.0.0.1', '73.237.101.174', '192.168.0.112']
 CONTROL_PORT = 23484
@@ -24,13 +24,6 @@ RC_CAR1_NS = '/rc1'
 active_clients: dict = []
 
 num = 0
-
-@dataclass
-class Client:
-	ip: Any
-	connection_timestamp: Any
-	sid: Any
-
 
 sio = socketio.AsyncServer(ping_timeout=60000, pingInterval=1, max_http_buffer_size=1_000_000)
 app = web.Application()
@@ -43,12 +36,29 @@ async def index(request):
 		return web.Response(text=f.read(), content_type='text/html')
 
 
-class ControlsServer:
+class ControlsServer(socketio.Namespace):
 
 	def __init__(self):
+		super().__init__()
 		app.router.add_static('/static', 'static')
 		app.router.add_get('/', index)
 		self.cleanup_img()
+		# MARK - rpi rc controls setup
+		self.rpi_connection_nominal = False
+		self.client = self.get_client()
+		if self.client is not None:
+			self.rpi_connection_nominal = True
+
+	@staticmethod
+	def get_client() -> Client:
+		client = None
+		# noinspection PyBroadException
+		try:
+			client = Client(netcfg.HOST, netcfg.HDW_PORT)
+		except Exception:
+			print("Error: unable to connect to host {}:{}".format(netcfg.HOST, netcfg.HDW_PORT))
+
+		return client
 
 	@staticmethod
 	def cleanup_img():
@@ -67,12 +77,26 @@ class ControlsServer:
 		else:
 			print("Client {} successfully connected".format(client_ip))
 
-	@staticmethod
 	@sio.on('control-event', namespace=RC_CAR1_NS)
-	async def control_handler(sid, data):
+	async def control_handler(self, sid, data):
 		print("Received control event ", data)
+		if self.rpi_connection_nominal:
+			if data is WebCommands.CTRL_FORWARD.value:
+				self.client.request(Commands.FORWARD, {"speed": data.fw_speed})
+			elif data is WebCommands.CTRL_BACKWARD.value:
+				self.client.request(Commands.BACKWARD, {"speed": data.bw_speed})
 
-		await sio.emit('ACK', room=sid)
+			elif data is WebCommands.CTRL_LEFT.value:
+				self.client.request(Commands.LEFT, {})
+			elif data is WebCommands.CTRL_RIGHT.value:
+				self.client.request(Commands.RIGHT, {})
+
+			elif data is WebCommands.CTRL_STOP.value:
+				self.client.request(Commands.STOP, {})
+
+			await sio.emit('ACK', room=sid)  # command was successfully executed
+		else:
+			await sio.emit('NACK', room=sid)  # command was not successfully executed
 
 	@staticmethod
 	@sio.event
