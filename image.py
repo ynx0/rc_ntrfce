@@ -5,7 +5,9 @@ import cv2
 import imagezmq.imagezmq as imagezmq
 from controls import ControlsServer
 
-image_hub = imagezmq.ImageHub(open_port='tcp://*:27427')
+IMAGE_SERVER_PORT = 27427
+
+image_hub = imagezmq.ImageHub(open_port='tcp://*:{}'.format(IMAGE_SERVER_PORT))
 
 
 class ImageProcessor:

@@ -19,6 +19,7 @@
           <option value="cv2.imshow" />
           <option value="cv2.rectangle" />
           <option value="motor_controller.RPi" />
+          <option value="dict.Q" />
         </list>
       </option>
     </inspection_tool>

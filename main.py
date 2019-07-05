@@ -9,7 +9,7 @@ def main():
 	image_processor = ImageProcessor(controls_server)
 
 	controls_thread = threading.Thread(target=controls_server.start_async, name='SocketIO Thread')
-	image_thread = threading.Thread(target=image_processor.start)
+	image_thread = threading.Thread(target=image_processor.start, name='Image Processing Thread')
 	controls_thread.setDaemon(True)
 	image_thread.setDaemon(True)
 
